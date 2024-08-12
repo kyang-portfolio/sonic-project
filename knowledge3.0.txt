@@ -1,0 +1,103 @@
+**Objective**:
+- The objective is to accurately label the receiver(s) of each message in a transcript, based on the context provided.
+
+**Receiver Identification**:
+1. **Single Participant**:
+   - Identify if the message is directed towards one specific participant.
+   - Example: If Vero (ID 0) asks a question to Nathan (ID 281), label the receiver as 281.
+
+2. **All Participants**:
+   - Identify if the message is meant for all participants.
+   - Example: If a participant announces something to the entire group, label the receiver as "all".
+
+3. **Multiple Participants in Sequence**:
+   - Identify if the message addresses several participants one after the other.
+   - Example: If a message addresses participant 2 first, then participant 3, label as '2,3'.
+   - Whenever a message addresses several participants, indicate where the message should be split.
+   - Example: if the message is "Oh, yeah. Brilliant. Vero, do you have any other ideas?" and it is labeled as "959,0", also indicate that the message should be     split into "Oh, yeah. Brilliant." and "Vero, do you have any other ideas?"
+
+4. **Mixed Addressing**:
+   - Identify if part of the message addresses all participants and then specific ones.
+   - Example: If a message starts with a general statement to all and then directs a question to participant 1, label as 'all,1'.
+
+**Context and Consistency**:
+- Always ONLY consider the preceding messages to maintain the context.
+- DO NOT look at the messages following a given message to determine the intended recipient, as this can introduce bias. 
+- Label intended recipients solely based on the current and previous messages only. 
+- Consistently check and compare with previous labels to ensure uniformity in labeling.
+
+**Examples**:
+1. **Single Participant**:
+   - Vero (ID 0) asks Nathan (ID 281):
+     ```
+     Sender: Vero
+     Message: "Nathan, could you clarify the item we discussed?"
+     Receiver: 281
+     ```
+   - Nathan responds to Vero:
+     ```
+     Sender: Participant 281
+     Message: "Sure, we agreed on the pistol and jack knife."
+     Receiver: 0
+     ```
+
+2. **All Participants**:
+   - A participant addresses everyone:
+     ```
+     Sender: Participant 102
+     Message: "I think we should all meet tomorrow."
+     Receiver: all
+     ```
+
+3. **Multiple Participants in Sequence**:
+   - A participant addresses multiple participants:
+     ```
+     Sender: Participant 103
+     Message: "Sarah, can you handle the report? And John, please check the budget."
+     Receiver: 104,105
+     ```
+
+4. **Mixed Addressing**:
+   - A participant starts with a general statement and then addresses a specific participant:
+     ```
+     Sender: Participant 104
+     Message: "Everyone, great job on the project. John, can you send the final report?"
+     Receiver: all,105
+     ```
+
+**Starting a New Dataset**:
+- Clearly state when starting a new dataset and always request the participant IDs.
+
+**Output Format**:
+- Ensure each output follows the format:
+  ```
+  Sender: [Sender ID]
+  Message: [First few words of the message]
+  Receiver: [Labeled receiver(s)]
+  ```
+
+**Additional Clarification**:
+- Do not use follow-up messages to determine the receiver of the current message. In a group meeting, one participant may ask a question to the entire group, but only one may respond. Base the receiver labeling on the current and preceding messages only. For example this is an example of a message sent by Participant 102 was directed to all participants even though Participant 105 responded directly:
+  ```
+- Message directed to all participants 
+  Sender: Participant 102 
+  Message: "Are we done with this task?" 
+  Receiver: all 
+
+- Participant 105 responds to the message 
+  Sender: Participant 105  
+  Message: "Not yet." 
+  Receiver: Participant 102 
+
+  ```
+** Note: it would be incorrect to label the intended recipient of the first message above as Participant 105, even though they responded to it, as it is biased to use future messages to label previous ones and the message was directed to all participants, rather than the initial responder. 
+
+
+
+**Identifying Potential Data Inaccuracies**:
+- If the sender of a message appears to be highly likely incorrect due to data inaccuracy, include a standardized comment in parentheses indicating this. For example:
+  ```
+  Sender: Vero (possible data error)
+  Message: "Vero do you know?"
+  Receiver: 0
+  ```
